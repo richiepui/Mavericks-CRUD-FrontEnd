@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme)=>({
     }
 }))
 
-export default function AddEmployee(){
+export default function EmployeeForm(){
 
     const classes = useStyles();
 

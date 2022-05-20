@@ -1,36 +1,33 @@
+import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import {useNavigate} from 'react-router-dom'
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import {useNavigate, useLocation} from 'react-router';
 
-export default function ButtonAppBar() {
+export default function ResponsiveAppBar() {
 
-  const nav = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleHideAddButton = (location:string) =>{
-    if (location == "/Add_Employee"){
-      return "none";
-    }
-  }
-  
-
-  return (
-    <Box sx={{ flexGrow:1 }}>
-      <AppBar position="static" sx={{bgcolor: "#365271"}}>
+  return(
+    <Box sx={{flexGrow:1}}>
+      <AppBar position='static' sx={{bgcolor:'#365271'}}>
         <Toolbar>
-          <Typography variant="h6"
-          sx={{flexGrow:1 , fontWeight:'bold', fontSize: 30, textDecoration:"none" , color:"white"}} onClick={()=>nav("/",{replace:true})}>
-            Employees
+          <Typography 
+          sx={{flexGrow:1, fontWeight:'bold',fontSize:30, textDecoration:'none',color:'white'}}
+          onClick={()=>navigate("/",{replace:true})}> Employees
           </Typography>
-            <Button variant="contained" onClick={()=> nav("/Add_Employee",{replace:true})} sx={{bgcolor:"#34933b"}} startIcon={<AddCircleIcon />}>
-              Add Employees</Button>
-          </Toolbar>
+          <Button
+          sx={{bgcolor:'#34933b'}}
+          startIcon={<AddCircleIcon />}
+          onClick={()=>navigate("/Employee-Form",{replace:true})} 
+          variant="contained"> Add Employees
+          </Button>
+        </Toolbar>
       </AppBar>
     </Box>
-  );
+  )
 }
 

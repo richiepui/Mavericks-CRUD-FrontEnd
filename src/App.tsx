@@ -1,20 +1,17 @@
 import './App.css';
-import ButtonAppBar from './components/navBar';
-import EmployeeList from './components/employeeList';
-import AddEmployee from './components/addEmployees'
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
-
-
+import {Route, Routes, BrowserRouter} from 'react-router-dom'
+import ResponsiveAppBar from './components/navBar'
+import EmployeeData from './components/employeeData'
+import EmployeeForm from './components/employeeForm'
 
 export default function App() {
-
   return (
     <div className="App">
       <BrowserRouter>
-        <ButtonAppBar />
+        <ResponsiveAppBar />
         <Routes>
-          <Route path = "/"  element= {<EmployeeList />}/>
-          <Route path = "/Add_Employee" element = {<AddEmployee />}/>
+          <Route path='/' element = {<EmployeeData />}/>
+          <Route path='/Employee-Form' element={<EmployeeForm />}/>
         </Routes>
       </BrowserRouter>
     </div>
