@@ -57,7 +57,7 @@ export default function EmployeeForm(){
                 <Grid container alignItems="center" direction = "column" className={classes.gridContainer} component="form" onSubmit={handleSubmit}>
                     <Grid item className = {classes.gridItemSpace}>
                         <Typography className={classes.typographyText}>
-                            Add A New Employee
+                            Employee Form
                         </Typography>
                     </Grid>
                     <Grid item className={classes.gridItemSpace}>

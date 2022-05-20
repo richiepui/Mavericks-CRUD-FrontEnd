@@ -16,7 +16,7 @@ export default function ResponsiveAppBar() {
       <AppBar position='static' sx={{bgcolor:'#365271'}}>
         <Toolbar>
           <Typography 
-          sx={{flexGrow:1, fontWeight:'bold',fontSize:30, textDecoration:'none',color:'white'}}
+          sx={{flexGrow:1, fontWeight:'bold',fontSize:'30px', textDecoration:'none',color:'white'}}
           onClick={()=>navigate("/",{replace:true})}> Employees
           </Typography>
           <Button
