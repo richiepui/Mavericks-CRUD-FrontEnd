@@ -1,4 +1,4 @@
-import { Grid, Typography, Box } from "@material-ui/core/";
+import { Grid, Typography} from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@mui/material/Button";
 
@@ -27,6 +27,11 @@ const useStyles = makeStyles((theme) => ({
     color: "#365271",
     fontWeight: "bold",
   },
+  pageGridContainer:{
+    [theme.breakpoints.only("xs")]:{
+      paddingRight:"35px"
+    }
+  }
 }));
 
 export default function EmployeePagination(props: PageProps) {
@@ -70,7 +75,11 @@ export default function EmployeePagination(props: PageProps) {
   };
 
   return (
-    <Grid container direction="row" style={{ display: "flex" }}>
+    <Grid
+      container
+      direction="row"
+      style={{ display: "flex", paddingTop: "10px" }}
+    >
       <Grid item style={{ flex: 1 }}>
         <Typography className={classes.leftSideDetails}>
           Showing {props.page * dPageSize + 1}-{cardsCount()} out of{" "}
@@ -78,25 +87,31 @@ export default function EmployeePagination(props: PageProps) {
         </Typography>
       </Grid>
       <Grid item>
-        <Button
-          disabled={handleDisablePrev()}
-          sx={{ fontWeight: "bold", color: "#365271" }}
-          onClick={handleDecrement}
-        >
-          Previous
-        </Button>
-      </Grid>
-      <Grid item>
-        <Typography className={classes.pageNumber}>{props.page + 1}</Typography>
-      </Grid>
-      <Grid item>
-        <Button
-          disabled={handleDisableNext()}
-          onClick={handleIncrement}
-          sx={{ fontWeight: "bold", color: "#365271" }}
-        >
-          Next
-        </Button>
+        <Grid container direction="row" className={classes.pageGridContainer}>
+          <Grid item>
+            <Button
+              disabled={handleDisablePrev()}
+              sx={{ fontWeight: "bold", color: "#365271" }}
+              onClick={handleDecrement}
+            >
+              Previous
+            </Button>
+          </Grid>
+          <Grid item>
+            <Typography className={classes.pageNumber}>
+              {props.page + 1}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Button
+              disabled={handleDisableNext()}
+              onClick={handleIncrement}
+              sx={{ fontWeight: "bold", color: "#365271" }}
+            >
+              Next
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

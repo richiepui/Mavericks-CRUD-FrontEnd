@@ -14,9 +14,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface employeeProps {
   employeeData: EmployeeModel;
+  setSelEmp: React.Dispatch<React.SetStateAction<EmployeeModel>>
+  setSelEdit: React.Dispatch<React.SetStateAction<number>>
+  setUpdate: React.Dispatch<React.SetStateAction<number>>
 }
 
 const useStyles = makeStyles({
@@ -45,19 +49,28 @@ const useStyles = makeStyles({
 });
 
 export default function EmployeeCard(props: employeeProps) {
+  const navigate = useNavigate();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const deleteEmployee = (employeeId: number) =>{
       axios.delete(`http://localhost:8080/employee/${employeeId}`).then(res=>{console.log(res.data)});
       setOpen(false);
+      props.setUpdate(1);
+  }
+
+  const handleEdit = () => {
+    props.setSelEmp(props.employeeData);
+    props.setSelEdit(1);
+    navigate("/Employee-Form",{replace:true});
+    
   }
 
   return (
     <>
       <Grid item xs={12} md={6} className={classes.gridItemPadding}>
         <Card className={classes.cardContainer} style={{ display: "flex", boxShadow:'none' }} elevation={0}>
-          <CardContent sx={{ flex: 1 }}>
+          <CardContent sx={{ flex: 1, paddingLeft:'10px', paddingTop:'5px', paddingBottom:'5px' }}>
             <Typography className={classes.typographyBoldText}>
               {props.employeeData.name}
             </Typography>
@@ -69,7 +82,7 @@ export default function EmployeeCard(props: employeeProps) {
             </Typography>
           </CardContent>
           <CardActions>
-            <IconButton aria-label="edit" style={{ color: "#fec333" }}>
+            <IconButton aria-label="edit" onClick={handleEdit} style={{ color: "#fec333" }}>
               <EditIcon />
             </IconButton>
             <IconButton aria-label="delete" onClick={()=>setOpen(true)} style={{ color: "#e50000" }}>

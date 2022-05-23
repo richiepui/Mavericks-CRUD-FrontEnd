@@ -1,110 +1,240 @@
-import FormControl from '@mui/material/FormControl'
-import {useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {Grid,Typography} from "@material-ui/core/"
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import FormControl from "@mui/material/FormControl";
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Grid, Typography } from "@material-ui/core/";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import defaultEmpFields, { EmployeeModel } from "../employeeModel";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Paper from "@mui/material/Paper";
+import SendIcon from "@mui/icons-material/Send";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-
-const useStyles = makeStyles((theme)=>({
-
-    gridContainer:{
-        border:"1px solid grey",
-        borderRadius:"5px",
-        padding: theme.spacing(2),
-        margin: "5% 20%",
-        maxWidth: 500
+const useStyles = makeStyles((theme) => ({
+  paperStyle: {
+    margin: theme.spacing(5),
+    padding: theme.spacing(3),
+    border: "1px solid grey",
+  },
+  formStyle: {
+    "& .MuiFormControl-root": {
+      width: "80%",
+      margin: theme.spacing(3),
     },
-
-    gridItemSpace:{
-        padding:"20px"
-
+    "& .MuiButtonBase-root": {
+      width: "30%",
+      height: "20%",
+      marginLeft: theme.spacing(3),
+      marginTop: theme.spacing(4),
     },
-
-    typographyText:{
-        fontWeight:'bold',
-        fontSize:'25px'
+    [theme.breakpoints.only("xs")]:{
+      "&. MuiFormControl-root":{
+        width:"80%",
+        margin: theme.spacing(4),
+      },
+      "& .MuiButtonBase-root":{
+        width: "30%",
+        height: "20%",
+        marginLeft:theme.spacing(15),
+        marginTop:theme.spacing(4)
+      }
     }
-}))
+  },
+}));
 
-export default function EmployeeForm(){
+interface EmpProps {
+  selectedEmpProps: EmployeeModel;
+  editStatus: number;
+  setEdit: React.Dispatch<React.SetStateAction<number>>;
+}
 
-    const classes = useStyles();
+export default function EmployeeForm(props: EmpProps) {
+  const navigate = useNavigate();
+  const [EmpValues, setEmpValues] = useState(
+    props.editStatus ? props.selectedEmpProps : defaultEmpFields
+  );
 
-    const[name, setName] = useState('');
-    const[salary, setSalary] = useState('');
-    const[nameError, setNameError] = useState(false);
-    const[salaryError, setSalaryError] = useState(false);
+  const [nameError, setnameError] = useState(false);
+  const [salaryError, setsalaryError] = useState(false);
+  const [nameHelpText, setnameHelpText] = useState("");
+  const [salaryHelpText, setsalaryHelpText] = useState("");
 
-    const [department, setDepartment] = useState('');
-
-    const handleChangeDdl = (event: SelectChangeEvent)=>{
-        setDepartment(event.target.value as string);
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (value.length === 0) {
+      setnameError(true);
+      setnameHelpText("Employee Name field cannot be empty");
+    } else if (!value.match("^[\\w\\-\\s]+$")) {
+      setnameError(true);
+      setnameHelpText(
+        "Employee Name field should only have alphabetical characters"
+      );
+    } else if (value.length < 2 && value.length > 64) {
+      setnameError(true);
+      setnameHelpText("Employee Name field must be between 2 to 64 characters");
+    } else {
+      setnameError(false);
+      setnameHelpText("");
     }
+    setEmpValues({
+      ...EmpValues,
+      [name]: value,
+    });
+  };
 
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-        console.log(e);
+  const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (!value.length) {
+      setsalaryError(true);
+      setsalaryHelpText("Employee Salary field must not be empty");
+    } else if (parseInt(value) <= 0) {
+      setsalaryError(true);
+      setsalaryHelpText("Employee Salary field must not be less than 0");
+    } else {
+      setsalaryError(false);
+      setsalaryHelpText("");
     }
+    setEmpValues({
+      ...EmpValues,
+      [name]: value,
+    });
+  };
 
-    return(
-        <div>
-            <Grid container justifyContent='center'>
-                <Grid container alignItems="center" direction = "column" className={classes.gridContainer} component="form" onSubmit={handleSubmit}>
-                    <Grid item className = {classes.gridItemSpace}>
-                        <Typography className={classes.typographyText}>
-                            Employee Form
-                        </Typography>
-                    </Grid>
-                    <Grid item className={classes.gridItemSpace}>
-                        <FormControl sx={{minWidth: 240}}>
-                            <TextField onChange={(e)=>setName(e.target.value)}
-                             required id="name"
-                              label="Employee Name"
-                              error={nameError}/>
-                        </FormControl>
-                    </Grid>
-                    <Grid item className={classes.gridItemSpace}>
-                        <FormControl sx={{minWidth: 240}}>
-                            <TextField 
-                            onChange={(e)=>setSalary(e.target.value)} 
-                            required id="salary" 
-                            label="Employee Salary"
-                            error={salaryError}/>
-                        </FormControl>
-                    </Grid>
-                    <Grid item className = {classes.gridItemSpace}>
-                        <FormControl sx={{minWidth: 240}}>
-                            <InputLabel id="demo-simple-select-helper-label">Department</InputLabel>
-                            <Select 
-                            labelId="simple-select-department"
-                            id="department"
-                            value={department}
-                            onChange={handleChangeDdl}
-                            label="Department">
-                                <MenuItem value = "">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={"HR"}>HR</MenuItem>
-                                <MenuItem value={"PS"}>PS</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item className = {classes.gridItemSpace}>
-                    <Button variant="contained" 
-                    onClick={()=>console.log("You Clicked Me")}
-                    type="submit" 
-                    sx={{bgcolor:"#34933b"}} 
-                    endIcon={<ArrowCircleRightIcon />}>
-                        Submit
-                    </Button>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </div>
-    );
+  const handleDepartmentChange = (e: SelectChangeEvent) => {
+    const { name, value } = e.target;
+    setEmpValues({
+      ...EmpValues,
+      [name]: value,
+    });
+  };
+
+  const handleSubmitValidation = () => {
+    const empName = EmpValues.name;
+    const empSalary = EmpValues.salary;
+    if (
+      !empName.length ||
+      !empName.match("^[\\w\\-\\s]+$") ||
+      (empName.length < 2 && empName.length > 64)
+    ) {
+      return false;
+    }
+    if (!empSalary.toString().length || empSalary <= 0) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (handleSubmitValidation()) {
+      if (props.editStatus) {
+        patchRequest();
+      } else {
+        postRequest();
+      }
+      navigate("/");
+    }
+  };
+
+  const addApiUrl = "http://localhost:8080/employee";
+  const editApiUrl = `http://localhost:8080/employee/${EmpValues.id}`;
+
+  const patchRequest = () => {
+    const patchEmployee = {
+      name: EmpValues.name,
+      salary: EmpValues.salary,
+      department: EmpValues.department,
+    };
+    axios
+      .patch(editApiUrl, patchEmployee)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    props.setEdit(0);
+  };
+
+  const postRequest = () => {
+    const addEmployee = {
+      name: EmpValues.name,
+      salary: EmpValues.salary,
+      department: EmpValues.department,
+    };
+    axios
+      .post(addApiUrl, addEmployee)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const classes = useStyles();
+
+  //by instantiating the name component, it is essentially pointing to the EmpValues Attributes.
+  return (
+    <Paper className={classes.paperStyle} elevation={0}>
+      <Typography
+        variant="h5"
+        style={{ fontWeight: "bold", paddingLeft: "25px" }}
+      >
+        {props.editStatus?"Edit Employee":"Add Employee"}
+      </Typography>
+      <form className={classes.formStyle} onSubmit={handleSubmit}>
+        <Grid container>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              variant="outlined"
+              label="Employee Name"
+              name="name"
+              value={EmpValues.name}
+              onChange={handleNameChange}
+              error={nameError}
+              helperText={nameHelpText}
+            />
+            <TextField
+              variant="outlined"
+              label="Employee Salary"
+              name="salary"
+              type="number"
+              value={EmpValues.salary}
+              onChange={handleSalaryChange}
+              error={salaryError}
+              helperText={salaryHelpText}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl>
+              <InputLabel id="department-label">Department</InputLabel>
+              <Select
+                labelId="department-ddl"
+                label="Department"
+                name="department"
+                value={EmpValues.department}
+                onChange={handleDepartmentChange}
+              >
+                <MenuItem value={"HR"}>HR</MenuItem>
+                <MenuItem value={"PS"}>PS</MenuItem>
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              sx={{ bgcolor: "#34933b" }}
+              disableElevation
+              type="submit"
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+    </Paper>
+  );
 }
