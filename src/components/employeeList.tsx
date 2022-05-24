@@ -10,7 +10,6 @@ import axios from "axios";
 
 interface Props{
   setEmp: React.Dispatch<React.SetStateAction<EmployeeModel>>
-  setEdit: React.Dispatch<React.SetStateAction<number>>
 }
 
 export default function EmployeeList(props:Props) {
@@ -46,7 +45,6 @@ export default function EmployeeList(props:Props) {
             <EmployeeCard
               employeeData={emp}
               setSelEmp={props.setEmp}
-              setSelEdit={props.setEdit}
               setUpdate={setUpdate}
               key={employeeData.indexOf(emp)}
             />

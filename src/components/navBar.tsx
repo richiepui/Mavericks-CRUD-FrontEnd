@@ -5,17 +5,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useNavigate} from 'react-router-dom'
 import ResponsiveButton from './responsiveButton'
+import {useDispatch} from "react-redux";
+import {setEditOff} from '../store/slices/editStatusSlice' 
 
-interface Props{
-  setEdit: React.Dispatch<React.SetStateAction<number>>
-}
-
-export default function ResponsiveAppBar(props:Props) {
+export default function ResponsiveAppBar() {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const homePageReturn=()=>{
-    props.setEdit(0);
+    dispatch(setEditOff());
     navigate("/",{replace:true});
 
   }

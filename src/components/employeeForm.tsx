@@ -12,6 +12,8 @@ import Paper from "@mui/material/Paper";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {setEditOff} from '../store/slices/editStatusSlice' 
 
 const useStyles = makeStyles((theme) => ({
   paperStyle: {
@@ -47,16 +49,16 @@ const useStyles = makeStyles((theme) => ({
 
 interface EmpProps {
   selectedEmpProps: EmployeeModel;
-  editStatus: number;
-  setEdit: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function EmployeeForm(props: EmpProps) {
+
+  const dispatch = useDispatch();
+  const editStatus = useSelector((state:any)=>state.editStatus.editStatus);
   const navigate = useNavigate();
   const [EmpValues, setEmpValues] = useState(
-    props.editStatus ? props.selectedEmpProps : defaultEmpFields
+    editStatus ? props.selectedEmpProps : defaultEmpFields
   );
-
   const [nameError, setnameError] = useState(false);
   const [salaryError, setsalaryError] = useState(false);
   const [nameHelpText, setnameHelpText] = useState("");
@@ -130,7 +132,7 @@ export default function EmployeeForm(props: EmpProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (handleSubmitValidation()) {
-      if (props.editStatus) {
+      if (editStatus) {
         patchRequest();
       } else {
         postRequest();
@@ -156,7 +158,7 @@ export default function EmployeeForm(props: EmpProps) {
       .catch((error) => {
         console.log(error);
       });
-    props.setEdit(0);
+    dispatch(setEditOff());
   };
 
   const postRequest = () => {
@@ -184,7 +186,7 @@ export default function EmployeeForm(props: EmpProps) {
         variant="h5"
         style={{ fontWeight: "bold", paddingLeft: "25px" }}
       >
-        {props.editStatus?"Edit Employee":"Add Employee"}
+        {editStatus?"Edit Employee":"Add Employee"}
       </Typography>
       <form className={classes.formStyle} onSubmit={handleSubmit}>
         <Grid container>

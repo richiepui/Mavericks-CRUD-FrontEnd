@@ -6,24 +6,22 @@ import EmployeeList from "./employeeList";
 import EmployeeForm from "./employeeForm";
 
 export default function HomePage() {
-  const [emp, setEmp] = useState<EmployeeModel>(defaultEmpFields);
-  const [edit, setEdit] = useState(0);
 
+  const [emp, setEmp] = useState<EmployeeModel>(defaultEmpFields);
+  
   return (
     <BrowserRouter>
-      <ResponsiveAppBar setEdit={setEdit} />
+      <ResponsiveAppBar/>
       <Routes>
         <Route
           path="/"
-          element={<EmployeeList setEmp={setEmp} setEdit={setEdit} />}
+          element={<EmployeeList setEmp={setEmp} />}
         />
         <Route
           path="/Employee-Form"
           element={
             <EmployeeForm
               selectedEmpProps={emp}
-              editStatus={edit}
-              setEdit={setEdit}
             />
           }
         />
