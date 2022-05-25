@@ -1,5 +1,5 @@
 import FormControl from "@mui/material/FormControl";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography } from "@material-ui/core/";
 import Button from "@mui/material/Button";
@@ -10,10 +10,11 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Paper from "@mui/material/Paper";
 import SendIcon from "@mui/icons-material/Send";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
+import {addEmployee, updateEmployee} from "../store/slices/employeeSlice";
 import {setEditOff} from '../store/slices/editStatusSlice' 
+import { RootState , useAppDispatch} from "../store/store";
 
 const useStyles = makeStyles((theme) => ({
   paperStyle: {
@@ -53,12 +54,22 @@ interface EmpProps {
 
 export default function EmployeeForm(props: EmpProps) {
 
-  const dispatch = useDispatch();
-  const editStatus = useSelector((state:any)=>state.editStatus.editStatus);
+  const dispatch = useAppDispatch();
+  
+  const editStatus = useSelector((state:RootState)=>state.editStatus.editStatus);
+  const updatedEmp = useSelector((state:RootState)=>state.employee.employee);
+  // console.log(updatedEmp);
+
+  useEffect(() => {
+   //refreshes page on update
+  }, [updatedEmp])
+  
+  
   const navigate = useNavigate();
   const [EmpValues, setEmpValues] = useState(
-    editStatus ? props.selectedEmpProps : defaultEmpFields
+    editStatus ? updatedEmp : defaultEmpFields
   );
+
   const [nameError, setnameError] = useState(false);
   const [salaryError, setsalaryError] = useState(false);
   const [nameHelpText, setnameHelpText] = useState("");
@@ -138,43 +149,28 @@ export default function EmployeeForm(props: EmpProps) {
         postRequest();
       }
       navigate("/");
+      dispatch(setEditOff());
     }
   };
 
-  const addApiUrl = "http://localhost:8080/employee";
-  const editApiUrl = `http://localhost:8080/employee/${EmpValues.id}`;
-
   const patchRequest = () => {
     const patchEmployee = {
+      id: EmpValues.id,
       name: EmpValues.name,
       salary: EmpValues.salary,
       department: EmpValues.department,
     };
-    axios
-      .patch(editApiUrl, patchEmployee)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    dispatch(setEditOff());
+    dispatch(updateEmployee(patchEmployee));
+    
   };
 
   const postRequest = () => {
-    const addEmployee = {
+    const postEmployee = {
       name: EmpValues.name,
       salary: EmpValues.salary,
       department: EmpValues.department,
     };
-    axios
-      .post(addApiUrl, addEmployee)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    dispatch(addEmployee(postEmployee));
   };
 
   const classes = useStyles();

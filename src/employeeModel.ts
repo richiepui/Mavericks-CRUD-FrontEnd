@@ -12,7 +12,7 @@ export interface postEmployee{
 }
 
 const defaultEmpFields = {
-    id: -1,
+    id: 0,
     name: "",
     salary: 0,
     department: "HR",

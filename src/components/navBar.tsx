@@ -5,18 +5,20 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useNavigate} from 'react-router-dom'
 import ResponsiveButton from './responsiveButton'
-import {useDispatch} from "react-redux";
 import {setEditOff} from '../store/slices/editStatusSlice' 
+import {useAppDispatch} from '../store/store'
+import { setEmployee } from '../store/slices/employeeSlice';
 
 export default function ResponsiveAppBar() {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  
+  const dispatch = useAppDispatch();
 
   const homePageReturn=()=>{
     dispatch(setEditOff());
+    dispatch(setEmployee({}));
     navigate("/",{replace:true});
-
   }
 
   return(

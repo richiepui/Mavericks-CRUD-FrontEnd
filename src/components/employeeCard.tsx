@@ -12,11 +12,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import {useSelector, useDispatch} from "react-redux";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAppDispatch} from '../store/store'
 import {setEditOn} from '../store/slices/editStatusSlice' 
+import {deleteEmployee, fetchEmployeeById} from '../store/slices/employeeSlice'
 
 interface employeeProps {
   employeeData: EmployeeModel;
@@ -53,20 +53,19 @@ export default function EmployeeCard(props: employeeProps) {
   const navigate = useNavigate();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const editStatus = useSelector((state:any)=>state.editStatus.editStatus);
-  const dispatch = useDispatch();
-
-  const deleteEmployee = (employeeId: number) =>{
-      axios.delete(`http://localhost:8080/employee/${employeeId}`).then(res=>{console.log(res.data)});
+  const dispatch = useAppDispatch();
+  
+  const deleteEmployees = (employeeId: number) =>{
+      dispatch(deleteEmployee(props.employeeData.id));
       setOpen(false);
       props.setUpdate(1);
+      props.setUpdate(0);
   }
 
   const handleEdit = () => {
-    props.setSelEmp(props.employeeData);
+    dispatch(fetchEmployeeById(props.employeeData.id));
     dispatch(setEditOn());
     navigate("/Employee-Form",{replace:true});
-    
   }
 
   return (
@@ -107,7 +106,7 @@ export default function EmployeeCard(props: employeeProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button autoFocus onClick={()=>deleteEmployee(props.employeeData.id)}>
+          <Button autoFocus onClick={()=>deleteEmployees(props.employeeData.id)}>
             Delete
           </Button>
         </DialogActions>

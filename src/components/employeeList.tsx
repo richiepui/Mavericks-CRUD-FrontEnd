@@ -5,33 +5,31 @@ import CssBaseline from "@mui/material/CssBaseline";
 import EmployeeCard from "./employeeCard";
 import EmployeePagination from "./employeePagination";
 import Container from "@mui/material/Container";
-import axios from "axios";
-
+import {useDispatch,useSelector} from "react-redux";
+import {AppDispatch, RootState} from '../store/store'
+import {fetchEmployees} from '../store/slices/employeeSlice'
 
 interface Props{
   setEmp: React.Dispatch<React.SetStateAction<EmployeeModel>>
 }
 
 export default function EmployeeList(props:Props) {
-
+  
+  const dispatch:AppDispatch = useDispatch();
   const [page, setPage] = useState(0);
   const[update,setUpdate] = useState(0);
-  const [employeeData, setEmployees] = useState<EmployeeModel[]>([]);
-  const apiUrl = "http://localhost:8080/employee";
-  
+
 
   useEffect(() => {
-    axios.get(apiUrl).then((res) => {
-      setEmployees(res.data);
-    });
-    setUpdate(0);
+    dispatch(fetchEmployees());
   }, [update]);
-
+  
+  const allEmployees = useSelector((state:RootState)=>state.employee.employees)
   
   const defaultPageSize = 10;
-  const numberOfPages = Math.ceil(employeeData.length / 10);
-  const lengthOfEmp = employeeData.length;
-  const currentPageEmp = employeeData.slice(
+  const numberOfPages = Math.ceil(allEmployees.length / 10);
+  const lengthOfEmp = allEmployees.length;
+  const currentPageEmp = allEmployees.slice(
     page * defaultPageSize,
     page * defaultPageSize + 10
   );
@@ -46,7 +44,7 @@ export default function EmployeeList(props:Props) {
               employeeData={emp}
               setSelEmp={props.setEmp}
               setUpdate={setUpdate}
-              key={employeeData.indexOf(emp)}
+              key={allEmployees.indexOf(emp)}
             />
           ))}
         </Grid>
