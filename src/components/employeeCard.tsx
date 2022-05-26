@@ -20,7 +20,6 @@ import {deleteEmployee, fetchEmployeeById} from '../store/slices/employeeSlice'
 
 interface employeeProps {
   employeeData: EmployeeModel;
-  setSelEmp: React.Dispatch<React.SetStateAction<EmployeeModel>>
   setUpdate: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -56,14 +55,17 @@ export default function EmployeeCard(props: employeeProps) {
   const dispatch = useAppDispatch();
   
   const deleteEmployees = (employeeId: number) =>{
-      dispatch(deleteEmployee(props.employeeData.id));
+      dispatch(deleteEmployee(employeeId));
       setOpen(false);
       props.setUpdate(1);
-      props.setUpdate(0);
   }
 
-  const handleEdit = () => {
-    dispatch(fetchEmployeeById(props.employeeData.id));
+  const handleEdit = async() => {
+    try{
+       await dispatch(fetchEmployeeById(props.employeeData.id))
+    }catch(rejectedValueOrSerializedError){
+      console.log(rejectedValueOrSerializedError);
+    }
     dispatch(setEditOn());
     navigate("/Employee-Form",{replace:true});
   }

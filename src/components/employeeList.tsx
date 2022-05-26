@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from "react";
-import {Grid} from "@material-ui/core/";
-import {EmployeeModel} from "../employeeModel";
+import { useState, useEffect } from "react";
+import { Grid } from "@material-ui/core/";
 import CssBaseline from "@mui/material/CssBaseline";
 import EmployeeCard from "./employeeCard";
 import EmployeePagination from "./employeePagination";
 import Container from "@mui/material/Container";
-import {useDispatch,useSelector} from "react-redux";
-import {AppDispatch, RootState} from '../store/store'
-import {fetchEmployees} from '../store/slices/employeeSlice'
+import { useSelector } from "react-redux";
+import { useAppDispatch, RootState } from "../store/store";
+import { fetchEmployees } from "../store/slices/employeeSlice";
 
-interface Props{
-  setEmp: React.Dispatch<React.SetStateAction<EmployeeModel>>
-}
-
-export default function EmployeeList(props:Props) {
-  
-  const dispatch:AppDispatch = useDispatch();
+export default function EmployeeList() {
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(0);
-  const[update,setUpdate] = useState(0);
-
+  const [update, setUpdate] = useState(0);
 
   useEffect(() => {
     dispatch(fetchEmployees());
   }, [update]);
-  
-  const allEmployees = useSelector((state:RootState)=>state.employee.employees)
-  
+
+  const allEmployees = useSelector(
+    (state: RootState) => state.employee.employees
+  );
+
   const defaultPageSize = 10;
   const numberOfPages = Math.ceil(allEmployees.length / 10);
   const lengthOfEmp = allEmployees.length;
@@ -42,7 +37,6 @@ export default function EmployeeList(props:Props) {
           {currentPageEmp.map((emp) => (
             <EmployeeCard
               employeeData={emp}
-              setSelEmp={props.setEmp}
               setUpdate={setUpdate}
               key={allEmployees.indexOf(emp)}
             />

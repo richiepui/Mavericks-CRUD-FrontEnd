@@ -7,6 +7,7 @@ const apiUrl = "http://localhost:8080/employee";
 interface EmployeeState {
   employees: EmployeeModel[];
   employee: EmployeeModel;
+  employeeId: number;
   status: string;
   error: string;
 }
@@ -30,7 +31,7 @@ export const fetchEmployees = createAsyncThunk(
 export const fetchEmployeeById = createAsyncThunk(
   "employee/fetchEmployeeById",
   async(employeeId: number) => {
-    const response = await axios.get<EmployeeModel>(`http://localhost:8080/employee/${employeeId}`);
+    const response = await axios.get(`http://localhost:8080/employee/${employeeId}`);
     return response.data;
   }
 )
@@ -38,15 +39,10 @@ export const fetchEmployeeById = createAsyncThunk(
 export const updateEmployee = createAsyncThunk(
   "employee/updateEmployee",
   async (employee: EmployeeModel) => {
-    const employeeId =  employee.id;
-    const updateEmployee:postEmployee = {
-      name: employee.name,
-      salary: employee.salary,
-      department: employee.department,
-    }
+    const {id, ...rest} = employee;
+    const updateEmployee:postEmployee = rest;
     const response = await axios.patch(
-      `http://localhost:8080/employee/${employeeId}`, updateEmployee);
-    console.log(response.data);
+      `http://localhost:8080/employee/${id}`, updateEmployee);
     return response.data;
   }
 );
@@ -64,6 +60,7 @@ export const deleteEmployee = createAsyncThunk(
 const initialState: EmployeeState = {
   employees: [],
   employee: defaultEmpFields,
+  employeeId: -1,
   status: "",
   error: "",
 };
@@ -72,7 +69,8 @@ const employeeSlice = createSlice({
   name: "employee",
   initialState,
   reducers: {
-    setEmployee: (state,action) => {state.employee = action.payload}
+    setEmployee: (state,action) => {state.employee = action.payload},
+    setEmployeeId: (state,action) =>{state.employeeId = action.payload}
   },
   extraReducers(builders) {
     builders
@@ -90,11 +88,10 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployeeById.fulfilled, (state,action)=>{
         state.status = "succeeded";
         state.employee = action.payload;
-        console.log(state.employee)
       })
   },
 });
 
-export const {setEmployee} = employeeSlice.actions;
+export const {setEmployee, setEmployeeId} = employeeSlice.actions;
 
 export default employeeSlice.reducer;

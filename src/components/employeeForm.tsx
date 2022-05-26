@@ -1,11 +1,11 @@
 import FormControl from "@mui/material/FormControl";
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography } from "@material-ui/core/";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import defaultEmpFields, { EmployeeModel } from "../employeeModel";
+import defaultEmpFields from "../employeeModel";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Paper from "@mui/material/Paper";
@@ -48,22 +48,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface EmpProps {
-  selectedEmpProps: EmployeeModel;
-}
-
-export default function EmployeeForm(props: EmpProps) {
+export default function EmployeeForm() {
 
   const dispatch = useAppDispatch();
-  
   const editStatus = useSelector((state:RootState)=>state.editStatus.editStatus);
   const updatedEmp = useSelector((state:RootState)=>state.employee.employee);
-  // console.log(updatedEmp);
-
-  useEffect(() => {
-   //refreshes page on update
-  }, [updatedEmp])
-  
   
   const navigate = useNavigate();
   const [EmpValues, setEmpValues] = useState(
@@ -175,7 +164,6 @@ export default function EmployeeForm(props: EmpProps) {
 
   const classes = useStyles();
 
-  //by instantiating the name component, it is essentially pointing to the EmpValues Attributes.
   return (
     <Paper className={classes.paperStyle} elevation={0}>
       <Typography

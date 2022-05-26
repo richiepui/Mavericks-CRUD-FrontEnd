@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,7 +11,6 @@ import { setEmployee } from '../store/slices/employeeSlice';
 export default function ResponsiveAppBar() {
 
   const navigate = useNavigate();
-  
   const dispatch = useAppDispatch();
 
   const homePageReturn=()=>{
