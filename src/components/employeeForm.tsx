@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import SendIcon from "@mui/icons-material/Send";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { addEmployee, updateEmployee, setEmployee } from "../store/slices/employeeSlice";
+import { addEmployee, updateEmployee, setEmployee, setEditOff} from "../store/slices/employeeSlice";
 import { RootState, useAppDispatch } from "../store/store";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -134,8 +134,9 @@ export default function EmployeeForm() {
     const requestMessage =  (unwrapResult(response)).message;
     const requestState = (unwrapResult(response)).requestState;
     if(requestState){
-      navigate("/");
+      navigate("/employee");
       dispatch(setEmployee({}));
+      dispatch(setEditOff());
       toast.success(requestMessage, {position:"bottom-right"});
     }else{
       toast.error(requestMessage, {position:"bottom-right"});
@@ -152,7 +153,7 @@ export default function EmployeeForm() {
     const requestMessage = (unwrapResult(response)).message;
     const requestState =  (unwrapResult(response)).requestState;
     if(requestState){
-      navigate("/");
+      navigate("/employee");
       toast.success(requestMessage, {position:"bottom-right"});
     }else{
       toast.error(requestMessage, {position:"bottom-right"});

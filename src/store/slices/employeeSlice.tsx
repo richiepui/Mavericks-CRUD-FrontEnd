@@ -1,7 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import defaultEmpFields, {
   EmployeeModel,
   postEmployee,
@@ -31,7 +28,9 @@ export const addEmployee = createAsyncThunk(
   "employee/addEmployee",
   async (employee: postEmployee) => {
     try {
-      const response = await axios.post(apiUrl, employee);
+      const response = await axios.post(apiUrl, employee, {
+        headers: { "x-access-token": localStorage.getItem("JwtToken") || "" }}
+        );
       return response.data;
     } catch (err: any) {
       return err.response.data;
@@ -42,8 +41,15 @@ export const addEmployee = createAsyncThunk(
 export const fetchEmployees = createAsyncThunk(
   "employee/fetchEmployee",
   async () => {
-    const response = await axios.get<EmployeeModel[]>(apiUrl);
-    return response.data;
+    try {
+      const response = await axios.get<EmployeeModel[]>(apiUrl, {
+        headers: { "x-access-token": localStorage.getItem("JwtToken") || "" }});
+      console.log(response.data);
+      return response.data;
+    } catch (err: any) {
+      console.log(err.response.data);
+      return err.response.data;
+    }
   }
 );
 
@@ -51,7 +57,8 @@ export const fetchEmployeeById = createAsyncThunk(
   "employee/fetchEmployeeById",
   async (employeeId: number) => {
     const response = await axios.get(
-      `http://localhost:8080/employee/${employeeId}`
+      `http://localhost:8080/employee/${employeeId}`,
+      { headers: { "x-access-token": localStorage.getItem("JwtToken") || "" } }
     );
     return response.data;
   }
@@ -65,7 +72,10 @@ export const updateEmployee = createAsyncThunk(
     try {
       const response = await axios.patch(
         `http://localhost:8080/employee/${id}`,
-        updateEmployee
+        updateEmployee,
+        {
+          headers: { "x-access-token": localStorage.getItem("JwtToken") || "" },
+        }
       );
       return response.data;
     } catch (err: any) {
@@ -79,7 +89,10 @@ export const deleteEmployee = createAsyncThunk(
   async (employeeId: number) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/employee/${employeeId}`
+        `http://localhost:8080/employee/${employeeId}`,
+        {
+          headers: { "x-access-token": localStorage.getItem("JwtToken") || "" },
+        }
       );
       return response.data;
     } catch (err: any) {
@@ -115,5 +128,5 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { setEmployee , setEditOff, setEditOn} = employeeSlice.actions;
+export const { setEmployee, setEditOff, setEditOn } = employeeSlice.actions;
 export default employeeSlice.reducer;

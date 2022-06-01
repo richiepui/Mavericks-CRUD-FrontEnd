@@ -11,13 +11,12 @@ import Button from "@mui/material/Button";
 import LoginIcon from "@mui/icons-material/Login";
 import LockOutlined from "@material-ui/icons/LockOutlined";
 import defaultUserFields from "../userModel";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../store/store";
-import { verifyUser } from "../store/slices/userSlice";
+import { verifyUser, verifyJwt } from "../store/slices/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
-import axios from 'axios';
-import { EmployeeModel } from "../employeeModel";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paperStyle: {
@@ -26,15 +25,28 @@ const useStyles = makeStyles((theme) => ({
     width: 500,
     margin: "80px auto",
   },
-  avatarStyle: { backgroundColor: "blue" },
+  avatarStyle: { backgroundColor: "#365271" },
   gridItemStyle: {
     padding: "20px",
   },
 }));
 
 export default function LoginForm() {
+
   const classes = useStyles();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const verifyToken = async () => {
+    const token = localStorage.getItem("JwtToken");
+    if (token) {
+      const response = await dispatch(verifyJwt(token));
+      const auth = unwrapResult(response).auth;
+      auth ? navigate("/employee") : navigate("/");
+    }
+  };
+
+  verifyToken();
 
   const [loginDetails, setLoginDetails] = useState(defaultUserFields);
 
@@ -62,18 +74,14 @@ export default function LoginForm() {
     };
     const response = await dispatch(verifyUser(user));
     const requestState = unwrapResult(response).requestState;
+    const message = unwrapResult(response).message;
     if (requestState) {
       const token = unwrapResult(response).token;
-      localStorage.setItem("JwtToken",token);
-      const something = localStorage.getItem("JwtToken");
-      if(something === null){
-        return
-      }
-      const text = await axios.get<EmployeeModel[]>("http://localhost:8080/employee",{headers:{"x-access-token": something}});
-      console.log(text);
-    }else{
-      const message =  unwrapResult(response).message;
-      toast(message);
+      localStorage.setItem("JwtToken", token);
+      toast.success(message, { position: "bottom-right" });
+      verifyToken();
+    } else {
+      toast.error(message, { position: "bottom-right" });
     }
   };
 
@@ -117,7 +125,7 @@ export default function LoginForm() {
               <Button
                 variant="contained"
                 endIcon={<LoginIcon />}
-                sx={{ bgcolor: "34933b" }}
+                sx={{ bgcolor: "#34933b" }}
                 disableElevation
                 type="submit"
               >

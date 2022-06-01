@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import {useNavigate} from 'react-router-dom'
 import ResponsiveButton from './responsiveButton'
 import {useAppDispatch} from '../store/store'
-import { setEmployee,setEditOff} from '../store/slices/employeeSlice';
+import {setEmployee,setEditOff} from '../store/slices/employeeSlice';
 
 export default function ResponsiveAppBar() {
 
@@ -15,7 +15,7 @@ export default function ResponsiveAppBar() {
   const homePageReturn=()=>{
     dispatch(setEditOff());
     dispatch(setEmployee({}));
-    navigate("/",{replace:true});
+    navigate("/employee",{replace:true});
   }
 
   return(
