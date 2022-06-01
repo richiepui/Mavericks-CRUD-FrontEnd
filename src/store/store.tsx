@@ -1,12 +1,12 @@
 import {configureStore} from "@reduxjs/toolkit";
-import editStatusReducer from "./slices/editStatusSlice";
 import employeeReducer from "./slices/employeeSlice";
+import userReducer from "./slices/userSlice"
 import {useDispatch} from "react-redux";
 
 export const store = configureStore({
   reducer: { 
-    editStatus: editStatusReducer,
-    employee: employeeReducer
+    employee: employeeReducer,
+    user: userReducer
   },
 });
 

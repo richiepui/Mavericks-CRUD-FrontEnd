@@ -21,6 +21,7 @@ export default function EmployeeList() {
     (state: RootState) => state.employee.employees
   );
 
+
   const defaultPageSize = 10;
   const numberOfPages = Math.ceil(allEmployees.length / 10);
   const lengthOfEmp = allEmployees.length;
@@ -37,6 +38,7 @@ export default function EmployeeList() {
           {currentPageEmp.map((emp) => (
             <EmployeeCard
               employeeData={emp}
+              update = {update}
               setUpdate={setUpdate}
               key={allEmployees.indexOf(emp)}
             />

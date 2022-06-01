@@ -1,5 +1,5 @@
 import FormControl from "@mui/material/FormControl";
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography } from "@material-ui/core/";
 import Button from "@mui/material/Button";
@@ -11,10 +11,12 @@ import InputLabel from "@mui/material/InputLabel";
 import Paper from "@mui/material/Paper";
 import SendIcon from "@mui/icons-material/Send";
 import { useNavigate } from "react-router-dom";
-import {useSelector} from "react-redux";
-import {addEmployee, updateEmployee} from "../store/slices/employeeSlice";
-import {setEditOff} from '../store/slices/editStatusSlice' 
-import { RootState , useAppDispatch} from "../store/store";
+import { useSelector } from "react-redux";
+import { addEmployee, updateEmployee, setEmployee } from "../store/slices/employeeSlice";
+import { RootState, useAppDispatch } from "../store/store";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { unwrapResult } from '@reduxjs/toolkit'
 
 const useStyles = makeStyles((theme) => ({
   paperStyle: {
@@ -33,27 +35,30 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: theme.spacing(3),
       marginTop: theme.spacing(4),
     },
-    [theme.breakpoints.only("xs")]:{
-      "&. MuiFormControl-root":{
-        width:"80%",
+    [theme.breakpoints.only("xs")]: {
+      "&. MuiFormControl-root": {
+        width: "80%",
         margin: theme.spacing(4),
       },
-      "& .MuiButtonBase-root":{
+      "& .MuiButtonBase-root": {
         width: "30%",
         height: "20%",
-        marginLeft:theme.spacing(15),
-        marginTop:theme.spacing(4)
-      }
-    }
+        marginLeft: theme.spacing(15),
+        marginTop: theme.spacing(4),
+      },
+    },
   },
 }));
 
 export default function EmployeeForm() {
 
   const dispatch = useAppDispatch();
-  const editStatus = useSelector((state:RootState)=>state.editStatus.editStatus);
-  const updatedEmp = useSelector((state:RootState)=>state.employee.employee);
+  const editStatus = useSelector(
+    (state: RootState) => state.employee.editStatus
+  );
   
+  const updatedEmp = useSelector((state: RootState) => state.employee.employee);
+
   const navigate = useNavigate();
   const [EmpValues, setEmpValues] = useState(
     editStatus ? updatedEmp : defaultEmpFields
@@ -113,53 +118,45 @@ export default function EmployeeForm() {
     });
   };
 
-  const handleSubmitValidation = () => {
-    const empName = EmpValues.name;
-    const empSalary = EmpValues.salary;
-    if (
-      !empName.length ||
-      !empName.match("^[\\w\\-\\s]+$") ||
-      (empName.length < 2 && empName.length > 64)
-    ) {
-      return false;
-    }
-    if (!empSalary.toString().length || empSalary <= 0) {
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (handleSubmitValidation()) {
-      if (editStatus) {
-        patchRequest();
-      } else {
-        postRequest();
-      }
-      navigate("/");
-      dispatch(setEditOff());
-    }
+    editStatus ? patchRequest() : postRequest();
   };
 
-  const patchRequest = () => {
+  const patchRequest = async () => {
     const patchEmployee = {
       id: EmpValues.id,
       name: EmpValues.name,
       salary: EmpValues.salary,
       department: EmpValues.department,
     };
-    dispatch(updateEmployee(patchEmployee));
-    
+    const response = await dispatch(updateEmployee(patchEmployee));
+    const requestMessage =  (unwrapResult(response)).message;
+    const requestState = (unwrapResult(response)).requestState;
+    if(requestState){
+      navigate("/");
+      dispatch(setEmployee({}));
+      toast.success(requestMessage, {position:"bottom-right"});
+    }else{
+      toast.error(requestMessage, {position:"bottom-right"});
+    }
   };
 
-  const postRequest = () => {
+  const postRequest = async () => {
     const postEmployee = {
       name: EmpValues.name,
       salary: EmpValues.salary,
       department: EmpValues.department,
     };
-    dispatch(addEmployee(postEmployee));
+    const response = await dispatch(addEmployee(postEmployee));
+    const requestMessage = (unwrapResult(response)).message;
+    const requestState =  (unwrapResult(response)).requestState;
+    if(requestState){
+      navigate("/");
+      toast.success(requestMessage, {position:"bottom-right"});
+    }else{
+      toast.error(requestMessage, {position:"bottom-right"});
+    }
   };
 
   const classes = useStyles();
@@ -170,7 +167,7 @@ export default function EmployeeForm() {
         variant="h5"
         style={{ fontWeight: "bold", paddingLeft: "25px" }}
       >
-        {editStatus?"Edit Employee":"Add Employee"}
+        {editStatus ? "Edit Employee" : "Add Employee"}
       </Typography>
       <form className={classes.formStyle} onSubmit={handleSubmit}>
         <Grid container>

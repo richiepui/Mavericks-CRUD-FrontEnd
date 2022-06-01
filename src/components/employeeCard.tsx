@@ -15,11 +15,13 @@ import Button from "@mui/material/Button";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from '../store/store'
-import {setEditOn} from '../store/slices/editStatusSlice' 
-import {deleteEmployee, fetchEmployeeById} from '../store/slices/employeeSlice'
+import {deleteEmployee, fetchEmployeeById, setEditOn} from '../store/slices/employeeSlice'
+import { toast } from "react-toastify";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 interface employeeProps {
   employeeData: EmployeeModel;
+  update: number;
   setUpdate: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -54,18 +56,16 @@ export default function EmployeeCard(props: employeeProps) {
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
   
-  const deleteEmployees = (employeeId: number) =>{
-      dispatch(deleteEmployee(employeeId));
+  const deleteEmployees = async (employeeId: number) =>{
+      const response =  await dispatch(deleteEmployee(employeeId));
+      const requestMessage = unwrapResult(response).message;
+      toast(requestMessage);
       setOpen(false);
-      props.setUpdate(1);
+      props.update ? props.setUpdate(0): props.setUpdate(1);
   }
 
   const handleEdit = async() => {
-    try{
-       await dispatch(fetchEmployeeById(props.employeeData.id))
-    }catch(rejectedValueOrSerializedError){
-      console.log(rejectedValueOrSerializedError);
-    }
+    await dispatch(fetchEmployeeById(props.employeeData.id))
     dispatch(setEditOn());
     navigate("/Employee-Form",{replace:true});
   }

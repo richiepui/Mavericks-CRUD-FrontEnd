@@ -4,9 +4,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {useNavigate} from 'react-router-dom'
 import ResponsiveButton from './responsiveButton'
-import {setEditOff} from '../store/slices/editStatusSlice' 
 import {useAppDispatch} from '../store/store'
-import { setEmployee } from '../store/slices/employeeSlice';
+import { setEmployee,setEditOff} from '../store/slices/employeeSlice';
 
 export default function ResponsiveAppBar() {
 
