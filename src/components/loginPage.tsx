@@ -11,12 +11,13 @@ import Button from "@mui/material/Button";
 import LoginIcon from "@mui/icons-material/Login";
 import LockOutlined from "@material-ui/icons/LockOutlined";
 import defaultUserFields from "../userModel";
-import React, { useEffect, useState } from "react";
+import React, { useState , useEffect} from "react";
 import { useAppDispatch } from "../store/store";
-import { verifyUser, verifyJwt } from "../store/slices/userSlice";
+import { verifyUser, verifyToken} from "../store/slices/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const useStyles = makeStyles((theme) => ({
   paperStyle: {
@@ -32,21 +33,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoginForm() {
-
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const verifyToken = async () => {
-    const token = localStorage.getItem("JwtToken");
-    if (token) {
-      const response = await dispatch(verifyJwt(token));
-      const auth = unwrapResult(response).auth;
-      auth ? navigate("/employee") : navigate("/");
-    }
-  };
+  const verifyJwt = async () => {
+    const response = await dispatch(verifyToken());
+    const auth = unwrapResult(response).auth;
+    auth? navigate("/employee") : navigate("/");
+  }
 
-  verifyToken();
+  useEffect(() => {
+    verifyJwt();
+  }, [])
+  
 
   const [loginDetails, setLoginDetails] = useState(defaultUserFields);
 
@@ -76,65 +76,66 @@ export default function LoginForm() {
     const requestState = unwrapResult(response).requestState;
     const message = unwrapResult(response).message;
     if (requestState) {
-      const token = unwrapResult(response).token;
-      localStorage.setItem("JwtToken", token);
+      verifyJwt();
       toast.success(message, { position: "bottom-right" });
-      verifyToken();
     } else {
       toast.error(message, { position: "bottom-right" });
     }
   };
 
   return (
-    <Container>
-      <Paper elevation={10} className={classes.paperStyle}>
-        <form onSubmit={handleSubmit}>
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="center"
-            direction="column"
-          >
-            <Grid item>
-              <Avatar className={classes.avatarStyle}>
-                <LockOutlined />
-              </Avatar>
+    <Grid container>
+      <CssBaseline />
+      <Container>
+        <Paper elevation={10} className={classes.paperStyle}>
+          <form onSubmit={handleSubmit}>
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              direction="column"
+            >
+              <Grid item>
+                <Avatar className={classes.avatarStyle}>
+                  <LockOutlined />
+                </Avatar>
+              </Grid>
+              <Grid item className={classes.gridItemStyle}>
+                <Typography variant="h5">Login</Typography>
+              </Grid>
+              <Grid item className={classes.gridItemStyle}>
+                <TextField
+                  variant="outlined"
+                  label="Username"
+                  name="username"
+                  value={loginDetails.username}
+                  onChange={handleUserNameChange}
+                />
+              </Grid>
+              <Grid item className={classes.gridItemStyle}>
+                <TextField
+                  variant="outlined"
+                  label="Password"
+                  name="password"
+                  value={loginDetails.password}
+                  onChange={handlePasswordChange}
+                />
+              </Grid>
+              <Grid item className={classes.gridItemStyle}>
+                <Button
+                  variant="contained"
+                  endIcon={<LoginIcon />}
+                  sx={{ bgcolor: "#34933b" }}
+                  disableElevation
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item className={classes.gridItemStyle}>
-              <Typography variant="h5">Login</Typography>
-            </Grid>
-            <Grid item className={classes.gridItemStyle}>
-              <TextField
-                variant="outlined"
-                label="Username"
-                name="username"
-                value={loginDetails.username}
-                onChange={handleUserNameChange}
-              />
-            </Grid>
-            <Grid item className={classes.gridItemStyle}>
-              <TextField
-                variant="outlined"
-                label="Password"
-                name="password"
-                value={loginDetails.password}
-                onChange={handlePasswordChange}
-              />
-            </Grid>
-            <Grid item className={classes.gridItemStyle}>
-              <Button
-                variant="contained"
-                endIcon={<LoginIcon />}
-                sx={{ bgcolor: "#34933b" }}
-                disableElevation
-                type="submit"
-              >
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </Container>
+          </form>
+        </Paper>
+      </Container>
+    </Grid>
   );
 }

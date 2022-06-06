@@ -59,7 +59,7 @@ export default function EmployeeCard(props: employeeProps) {
   const deleteEmployees = async (employeeId: number) =>{
       const response =  await dispatch(deleteEmployee(employeeId));
       const requestMessage = unwrapResult(response).message;
-      toast(requestMessage);
+      toast.success(requestMessage, {position:"bottom-right"});
       setOpen(false);
       props.update ? props.setUpdate(0): props.setUpdate(1);
   }

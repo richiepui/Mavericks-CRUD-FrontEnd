@@ -28,9 +28,7 @@ export const addEmployee = createAsyncThunk(
   "employee/addEmployee",
   async (employee: postEmployee) => {
     try {
-      const response = await axios.post(apiUrl, employee, {
-        headers: { "x-access-token": localStorage.getItem("JwtToken") || "" }}
-        );
+      const response = await axios.post(apiUrl, employee);
       return response.data;
     } catch (err: any) {
       return err.response.data;
@@ -42,9 +40,7 @@ export const fetchEmployees = createAsyncThunk(
   "employee/fetchEmployee",
   async () => {
     try {
-      const response = await axios.get<EmployeeModel[]>(apiUrl, {
-        headers: { "x-access-token": localStorage.getItem("JwtToken") || "" }});
-      console.log(response.data);
+      const response = await axios.get<EmployeeModel[]>(apiUrl);
       return response.data;
     } catch (err: any) {
       console.log(err.response.data);
@@ -57,8 +53,7 @@ export const fetchEmployeeById = createAsyncThunk(
   "employee/fetchEmployeeById",
   async (employeeId: number) => {
     const response = await axios.get(
-      `http://localhost:8080/employee/${employeeId}`,
-      { headers: { "x-access-token": localStorage.getItem("JwtToken") || "" } }
+      `http://localhost:8080/employee/${employeeId}`
     );
     return response.data;
   }
@@ -72,10 +67,7 @@ export const updateEmployee = createAsyncThunk(
     try {
       const response = await axios.patch(
         `http://localhost:8080/employee/${id}`,
-        updateEmployee,
-        {
-          headers: { "x-access-token": localStorage.getItem("JwtToken") || "" },
-        }
+        updateEmployee
       );
       return response.data;
     } catch (err: any) {
@@ -89,10 +81,7 @@ export const deleteEmployee = createAsyncThunk(
   async (employeeId: number) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/employee/${employeeId}`,
-        {
-          headers: { "x-access-token": localStorage.getItem("JwtToken") || "" },
-        }
+        `http://localhost:8080/employee/${employeeId}`
       );
       return response.data;
     } catch (err: any) {

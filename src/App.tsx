@@ -1,23 +1,15 @@
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
-import LoginForm from "./components/loginPage";
-import ResponsiveAppBar from "./components/navBar";
-import { Route, Routes, BrowserRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import EmployeeList from "./components/employeeList";
-import EmployeeForm from "./components/employeeForm";
+import HomePage from "./components/homepage";
 
 export default function App() {
+  const theme = createTheme({palette: { primary: {main: "#365271"}}})
   return (
     <div className="App">
-      <BrowserRouter>
-        <ResponsiveAppBar />
-        <Routes>
-          <Route path="/" element={<LoginForm/>}/>
-          <Route path="/Employee" element={<EmployeeList />} />
-          <Route path="/Employee-Form" element={<EmployeeForm />} />
-        </Routes>
-        <ToastContainer />
-      </BrowserRouter>
+      <CssBaseline />
+      <ThemeProvider theme={theme}>
+      <HomePage/>
+      </ThemeProvider>
     </div>
   );
 }
